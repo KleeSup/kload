@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"../config"
-	"../metrics"
+	"kload/internal/config"
+	"kload/internal/metrics"
 )
 
 // OnResult is called after each request completes (then used for live verbose output)

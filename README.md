@@ -1,6 +1,27 @@
 # kload
 Lightweight CLI load-testing-tool for HTTPS-Endpoints written in Go.
 
+## About
+**kload** is a lightweight HTTP load testing tool built in Go. 
+It sends a configurable number of concurrent requests against an endpoint and reports back latency percentiles, 
+throughput, and status code breakdowns and therefore everything you need to understand how a service behaves under pressure.
+
+It's built with **zero** external dependencies, relying entirely on the Go standard library. 
+That keeps the binary small, the build fast, and the codebase easy to audit. 
+
+The concurrency model is a straightforward worker pool: a fixed number of goroutines pull jobs from a channel and feed 
+results back through another, which makes the load behaviour predictable and the code easy to reason about.
+
+### Why use kload?
+-[x] Zero dependencies
+-[x] Complete metrics (latency in min, max, mean, p50, p90, ...)
+-[x] Built for both humans and pipelines
+  - readable table output for interactive use and JSON or CSV for CI integration and further analysis
+-[x] Realistic load shaping 
+  - Cap requests per second, run for a fixed duration or a fixed request count, and use warmup phases to exclude 
+    cold-start noise from your results  
+
+
 ## Usage
 By invoking the command ```kload``` the following flags can be used:
 
@@ -27,7 +48,7 @@ By invoking the command ```kload``` the following flags can be used:
 | ``--http2``               |  ``Boolean``   |    No    | Force HTTP/2 (default negotiates)                                           | ``--http2``                             |
 | ``--keep-alive``          |  ``Boolean``   |    No    | Reuse TCP connections between requests                                      | ``--keep-alive``                        |
 
-Execution examples
+#### Execution examples
 ```
 # Basic GET with 500 requests and 20 workers
 kload -u https://api.example.com/health -n 500 -c 20
@@ -44,7 +65,31 @@ kload -u https://api.example.com -n 1000 -c 50 \
       --no-progress -o results.json
 ```
 
+#### Output example (console)
+![Output example for kload](docs/img.png)
+
+#### Output example (JSON)
+````json
+{
+  "total": 1000,
+  "successful": 1000,
+  "failed": 0,
+  "req_per_sec": 1041.7580375278749,
+  "total_duration_s": 0.9599158,
+  "latency": {
+    "max": "141.5ms",
+    "mean": "23.5ms",
+    "min": "15.4ms",
+    "p50": "18.6ms",
+    "p90": "24.0ms",
+    "p95": "38.5ms",
+    "p99": "137.0ms"
+  },
+  "status_codes": {
+    "200": 1000
+  }
+}
+````
+
 ## Dependencies
-- [cobra](https://github.com/spf13/cobra) (v1.10.2) by spf13
-- [progressbar](https://github.com/schollz/progressbar) (v1.0.0) by schollz
-- [fatih/color](https://github.com/fatih/color) (v1.19.0) by fatih
+> No Dependencies! kload is completely dependency free and built in Go 1.26.4.

@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"encoding/json"
@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"../internal/config"
-	"../internal/metrics"
-	"../internal/reporter"
-	"../internal/runner"
+	"kload/internal/config"
+	"kload/internal/metrics"
+	"kload/internal/reporter"
+	"kload/internal/runner"
 )
 
-func main() {
+func Run() {
 	cfg, err := config.Parse()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "kload: %v\n", err)

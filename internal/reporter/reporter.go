@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"../metrics"
+	"kload/internal/metrics"
 )
 
 // ANSI colour codes (! degrade gracefully on terminals that don't support them !)
@@ -160,13 +160,13 @@ func WriteJSON(path string, s metrics.Summary) error {
 		ReqPerSec:     s.ReqPerSec,
 		TotalDuration: s.TotalDuration.Seconds(),
 		Latency: map[string]string{
-			"min":  fmtDur(s.Min),
-			"mean": fmtDur(s.Mean),
-			"p50":  fmtDur(s.P50),
-			"p90":  fmtDur(s.P90),
-			"p95":  fmtDur(s.P95),
-			"p99":  fmtDur(s.P99),
-			"max":  fmtDur(s.Max),
+			"min":  fmtDurNoColor(s.Min),
+			"mean": fmtDurNoColor(s.Mean),
+			"p50":  fmtDurNoColor(s.P50),
+			"p90":  fmtDurNoColor(s.P90),
+			"p95":  fmtDurNoColor(s.P95),
+			"p99":  fmtDurNoColor(s.P99),
+			"max":  fmtDurNoColor(s.Max),
 		},
 		StatusCodes: s.StatusCodes,
 	}
@@ -220,4 +220,18 @@ func fmtDur(d time.Duration) string {
 		return fmt.Sprintf("%s%.1fms%s", bold, ms, reset)
 	}
 	return fmt.Sprintf("%s%.2fs%s", bold, ms/1000.0, reset)
+}
+
+func fmtDurNoColor(d time.Duration) string {
+	if d == 0 {
+		return "—"
+	}
+	if d < time.Millisecond {
+		return "µs" // shouldn't happen in practice
+	}
+	ms := float64(d.Microseconds()) / 1000.0
+	if ms < 1000 {
+		return fmt.Sprintf("%.1fms", ms)
+	}
+	return fmt.Sprintf("%.2fs", ms/1000.0)
 }
