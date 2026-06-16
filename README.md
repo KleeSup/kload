@@ -1,5 +1,5 @@
 # kload
-Lightweight CLI load-testing-tool for HTTPS-Endpoints written in Go.
+> Lightweight CLI load-testing-tool for HTTPS-Endpoints written in Go.
 
 ## About
 **kload** is a lightweight HTTP load testing tool built in Go. 
@@ -16,11 +16,12 @@ results back through another, which makes the load behaviour predictable and the
 - [x] Zero dependencies
 - [x] Complete metrics (latency in min, max, mean, p50, p90, ...)
 - [x] Built for both humans and pipelines
-  - readable table output for interactive use and JSON or CSV for CI integration and further analysis
+  - Readable table output for interactive use and JSON or CSV for CI integration and further analysis
 - [x] Realistic load shaping 
   - Cap requests per second, run for a fixed duration or a fixed request count, and use warmup phases to exclude 
     cold-start noise from your results  
 
+---
 
 ## Usage
 By invoking the command ```kload``` the following flags can be used:
@@ -47,6 +48,8 @@ By invoking the command ```kload``` the following flags can be used:
 | ``--insecure``            |  ``Boolean``   |    No    | Skip TLS certificate verification                                           | ``--insecure``                          |
 | ``--http2``               |  ``Boolean``   |    No    | Force HTTP/2 (default negotiates)                                           | ``--http2``                             |
 | ``--keep-alive``          |  ``Boolean``   |    No    | Reuse TCP connections between requests                                      | ``--keep-alive``                        |
+
+---
 
 #### Execution examples
 ```
@@ -91,5 +94,7 @@ kload -u https://api.example.com -n 1000 -c 50 \
 }
 ````
 
+---
+
 ## Dependencies
-> No Dependencies! kload is completely dependency free and built in Go 1.26.4.
+> No Dependencies! kload is completely dependency free and built in Go version 1.26.4.
