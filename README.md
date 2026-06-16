@@ -13,11 +13,11 @@ The concurrency model is a straightforward worker pool: a fixed number of gorout
 results back through another, which makes the load behaviour predictable and the code easy to reason about.
 
 ### Why use kload?
--[x] Zero dependencies
--[x] Complete metrics (latency in min, max, mean, p50, p90, ...)
--[x] Built for both humans and pipelines
+- [x] Zero dependencies
+- [x] Complete metrics (latency in min, max, mean, p50, p90, ...)
+- [x] Built for both humans and pipelines
   - readable table output for interactive use and JSON or CSV for CI integration and further analysis
--[x] Realistic load shaping 
+- [x] Realistic load shaping 
   - Cap requests per second, run for a fixed duration or a fixed request count, and use warmup phases to exclude 
     cold-start noise from your results  
 
