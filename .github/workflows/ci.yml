@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.4'
+          cache: true
+
+      - name: Verify formatting
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "The following files are not gofmt-formatted:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test -race -coverprofile=coverage.out ./...
+
+      - name: Coverage summary
+        run: go tool cover -func=coverage.out | tail -1
+
+  smoke:
+    name: End-to-end smoke test
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.4'
+          cache: true
+
+      - name: Build binary
+        run: go build -o kload ./main.go
+
+      - name: Start local test server
+        run: |
+          cat > server.go << 'EOF'
+          package main
+          import ("net/http"; "log")
+          func main() {
+            http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+              w.WriteHeader(200)
+              w.Write([]byte("ok"))
+            })
+            log.Fatal(http.ListenAndServe(":8080", nil))
+          }
+          EOF
+          go run server.go &
+          sleep 2
+
+      - name: Run kload against local server
+        run: |
+          ./kload -u http://localhost:8080/ -n 200 -c 10 --no-progress
+          echo "Exit code: $?"
